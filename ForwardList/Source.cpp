@@ -301,7 +301,7 @@ ForwardList operator+(const ForwardList& left, const ForwardList& right)
 //#define BASE_CHECK
 //#define COUNT_CHECK
 //#define RANGE_BASE_FOR_ARRAY
-#define RANGE_BASED_FOR_LIST
+//#define RANGE_BASED_FOR_LIST
 //#define PREFORMANCE_CHECK
 
 void main()
