@@ -203,6 +203,11 @@ public:
 		*this = other;
 		cout << "CopyConstructor:" << this << endl;
 	}
+	List(List&& other) :List()
+	{
+		*this = std::move(other);
+		cout << "MoveConstructor:\t" << this << endl;
+	}
 	~List()
 	{
 		//while (Head)pop_front();
