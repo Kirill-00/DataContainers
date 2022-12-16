@@ -88,7 +88,7 @@ public:
 	ForwardList() :Head(nullptr), size(0)
 	{
 		//Конструктор по умолчанию создает пустой список.
-		//Eусли Голова указывает на 0, то список пуст
+		//Eсли Голова указывает на 0, то список пуст
 		cout << "LConstructor:\t" << this << endl;
 
 	}
@@ -298,7 +298,7 @@ ForwardList operator+(const ForwardList& left, const ForwardList& right)
 	return cat;
 }
 
-//#define BASE_CHECK
+#define BASE_CHECK
 //#define COUNT_CHECK
 //#define RANGE_BASE_FOR_ARRAY
 //#define RANGE_BASED_FOR_LIST
