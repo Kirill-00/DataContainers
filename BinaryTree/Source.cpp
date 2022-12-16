@@ -74,6 +74,11 @@ public:
 		if (Root == nullptr)return 0;
 		return count(Root->pRight) + count(Root->pLeft) + 1;
 	}
+	int sum(Element* Root)
+	{
+		if (Root == nullptr)return 0;
+		return (Root->Data + sum(Root->pRight) + sum(Root->pLeft));
+	}
 };
 
 void main()
@@ -91,4 +96,6 @@ void main()
 	cout << "Минимальное значение: " << tree.minValue(tree.getRoot()) << endl;
 	cout << "Максимальное значение: " << tree.maxValue(tree.getRoot()) << endl;
 	cout << "Количество элементов дерева: " << tree.count(tree.getRoot()) << endl;
+	cout << "Сумма элементов дерева: " << tree.sum(tree.getRoot()) << endl;
+
 }
