@@ -4,8 +4,11 @@ using namespace std;
 #define tab "\t"
 #define delimiter "\n-------------------------------------\n"
 
+#define DEBUG
+
 class Tree
 {
+protected:
 	class Element
 	{
 		int Data;                //Значение элемента
@@ -14,13 +17,24 @@ class Tree
 		Element(int Data, Element* pLeft = nullptr, Element* pRight = nullptr)
 			:Data(Data), pLeft(pLeft), pRight(pRight)
 		{
+#ifdef DEBUG
 			cout << "EConstructor:\t" << this << endl;
+#endif // DEBUG
+
 		}
 		~Element()
 		{
-			cout<< "EDestructor:\t" << this << endl;
+#ifdef DEBUG
+			cout << "EDestructor:\t" << this << endl;
+#endif // DEBUG
+
+		}
+		bool isLeft()const
+		{
+			return pLeft == pRight;
 		}
 		friend class Tree;
+		friend class UniqueTree;
 	}*Root;
 public:
 	Element* getRoot()const
@@ -31,11 +45,55 @@ public:
 	{
 		cout << "TConstructor:\t" << this << endl;
 	}
+	Tree(const std::initializer_list<int>& il) :Tree()
+	{
+		for (int const* it = il.begin(); it != il.end(); ++it)
+			insert(*it, Root);
+	}
 	~Tree()
 	{
+		clear(Root);
 		cout << "TDestructor:\t" << this << endl;
 	}
-
+	void insert(int Data)
+	{
+		insert(Data, Root);
+	}
+	void clear()
+	{
+		clear(Root);
+		Root = nullptr;
+	}
+	int minValue()const
+	{
+		return minValue(Root);
+	}
+	int maxValue()const
+	{
+		return maxValue(Root);
+	}
+	int Count()const
+	{
+		return Cout(Root);
+	}
+	int Sum()const
+	{
+		return Sum(Root);
+	}
+	double Avg()const
+	{
+		return(double)Sum(Root) / Cout(Root);
+	}
+	int Depth()const
+	{
+		return Depth(Root);
+	}
+	void print()const
+	{
+		print(Root);
+		cout << endl;
+	}
+private:
 	void insert(int Data, Element* Root)
 	{
 		if (this->Root == nullptr)this->Root = new Element(Data);
@@ -51,7 +109,74 @@ public:
 			else insert(Data, Root->pRight);
 		}
 	}
-
+	void erese(int Data, Element* Root)
+	{
+		if (Root == nullptr)return;
+		erese(Data, Root->pLeft);
+		erese(Data, Root->pRight);
+		if (Data == Root->Data)
+		{
+			if (Root->isLeft())
+			{
+				delete Root;
+				Root = nullptr;
+			}
+			else
+			{
+				if (Count(Root->pLeft) > Count(Root.pRight))
+				{
+					Root->Data = maxValue(Root->pLeft);
+					erese(maxValue(Root->pLeft),Root->pLeft)
+				}
+			}
+		}
+	}
+	void clear(Element* Root)
+	{
+		if (Root == nullptr)return;
+		clear(Root->pLeft);
+		clear(Root->pRight);
+		delete Root;
+	}
+	int minValue(Element* Root)const
+	{
+		/*if (Root->pLeft == nullptr)return Root->Data;
+		minValue(Root->pLeft);*/
+		if (Root == nullptr)return 0;
+		return Root->pLeft == nullptr ? Root->Data : minValue(Root->pLeft);
+	}
+	int maxValue(Element* Root)const
+	{
+		/*if (Root->pRight == nullptr)return Root->Data;
+		maxValue(Root->pRight);*/
+		if (Root == nullptr)return 0;
+		return Root->pRight ? minValue(Root->pRight) : Root->Data;
+	}
+	int Cout(Element* Root)const
+	{
+		/*if (Root == nullptr)return 0;
+		return count(Root->pRight) + count(Root->pLeft) + 1;*/
+		return !Root ? 0 : Cout(Root->pLeft) + Cout(Root->pRight) + 1;
+	}
+	int Sum(Element* Root)const
+	{
+		/*if (Root == nullptr)return 0;
+		return (Root->Data + sum(Root->pRight) + sum(Root->pLeft));*/
+		return !Root ? 0 : Sum(Root->pLeft) + Sum(Root->pRight) + Root->Data;
+	}
+	int Depth(Element* Root)const
+	{
+		if (Root == nullptr)return 0;
+		/*if (Depth(Root->pLeft) < Depth(Root->pRight))return Depth(Root->pRight) + 1;
+		else return Depth(Root->pLeft) + 1;*/
+		int left_depth = Depth(Root->pLeft) + 1;
+		int right_depth = Depth(Root->pRight) + 1;
+		return left_depth > right_depth ? left_depth : right_depth;
+		/*return !Root ? 0 : 
+			Depth(Root->pLeft) > Depth(Root->pRight) ?
+			Depth(Root->pLeft) + 1 :
+			Depth(Root->pRight) + 1;*/
+	}
 	void print(Element* Root)const
 	{
 		if (Root == nullptr)return;
@@ -59,43 +184,69 @@ public:
 		cout << Root->Data << tab;
 		print(Root->pRight);
 	}
-	int minValue(Element* Root) const
+};
+class UniqueTree :public Tree
+{
+	void insert(int Data, Element* Root)
 	{
-		if (Root->pLeft == nullptr)return Root->Data;
-		minValue(Root->pLeft);
+		if (this->Root == nullptr)this->Root = new Element(Data);
+		if (Root == nullptr)return;
+		if (Data < Root->Data)
+		{
+			if (Root->pLeft == nullptr)Root->pLeft = new Element(Data);
+			else insert(Data, Root->pLeft);
+		}
+		else if (Data > Root->Data)
+		{
+			if (Root->pRight == nullptr)Root->pRight = new Element(Data);
+			else insert(Data, Root->pRight);
+		}
 	}
-	int maxValue(Element* Root) const
+public:
+	void insert(int Data)
 	{
-		if (Root->pRight == nullptr)return Root->Data;
-		maxValue(Root->pRight);
-	}
-	int count(Element* Root)
-	{
-		if (Root == nullptr)return 0;
-		return count(Root->pRight) + count(Root->pLeft) + 1;
-	}
-	int sum(Element* Root)
-	{
-		if (Root == nullptr)return 0;
-		return (Root->Data + sum(Root->pRight) + sum(Root->pLeft));
+		insert(Data, Root);
 	}
 };
+
+#define BASE_CHECK
 
 void main()
 {
 	setlocale(LC_ALL, "Rus");
+#ifdef BASE_CHECK
 	int n;
 	cout << "Введите колличество элементов: "; cin >> n;
 	Tree tree;
 	for (int i = 0; i < n; i++)
 	{
-		tree.insert(rand() % 100, tree.getRoot());
+		tree.insert(rand() % 100);
 	}
-	tree.print(tree.getRoot());
+	tree.clear();
+	tree.print();
 	cout << endl;
-	cout << "Минимальное значение: " << tree.minValue(tree.getRoot()) << endl;
-	cout << "Максимальное значение: " << tree.maxValue(tree.getRoot()) << endl;
-	cout << "Количество элементов дерева: " << tree.count(tree.getRoot()) << endl;
-	cout << "Сумма элементов дерева: " << tree.sum(tree.getRoot()) << endl;
+	cout << "Минимальное значение: " << tree.minValue() << endl;
+	cout << "Максимальное значение: " << tree.maxValue() << endl;
+	cout << "Количество элементов дерева: " << tree.Count() << endl;
+	cout << "Сумма элементов дерева: " << tree.Sum() << endl;
+	cout << "Среднее-арефметическое элементов дерева: " << tree.Avg() << endl;
+	cout << "Глубина дерева: " << tree.Depth() << endl;
 
+	UniqueTree unique_tree;
+	for (int i = 0; i < n; i++)
+	{
+		unique_tree.insert(rand() % 100);
+	}
+	unique_tree.print();
+	cout << "Минимальное значение в дереве: " << unique_tree.minValue() << endl;
+	cout << "Максимальное значение в дереве: " << unique_tree.maxValue() << endl;
+	cout << "Количество элементов в дереве: " << unique_tree.Count() << endl;
+	cout << "Сумма элементов в дереве: " << unique_tree.Sum() << endl;
+	cout << "Среднее-арифметическое элементов в дереве: " << unique_tree.Avg() << endl;
+	cout << "Глубина дерева: " << unique_tree.Depth() << endl;
+#endif // BASE_CHECK
+
+	Tree my_tree = { 50, 25, 75, 16, 32, 58, 85, 48, 49 };
+	my_tree.print();
+	cout << "Глубина дерева: " << my_tree.Depth() << endl;
 }
