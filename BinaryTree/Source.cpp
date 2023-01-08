@@ -11,8 +11,8 @@ class Tree
 protected:
 	class Element
 	{
-		int Data;                //Значение элемента
-		Element* pLeft, * pRight;//Адреса потомков
+		int Data;				//Значение элемента
+		Element *pLeft, *pRight;//Адреса потомков
 	public:
 		Element(int Data, Element* pLeft = nullptr, Element* pRight = nullptr)
 			:Data(Data), pLeft(pLeft), pRight(pRight)
@@ -20,16 +20,14 @@ protected:
 #ifdef DEBUG
 			cout << "EConstructor:\t" << this << endl;
 #endif // DEBUG
-
 		}
 		~Element()
 		{
 #ifdef DEBUG
 			cout << "EDestructor:\t" << this << endl;
 #endif // DEBUG
-
 		}
-		bool isLeft()const
+		bool isLeaf()const
 		{
 			return pLeft == pRight;
 		}
@@ -59,6 +57,10 @@ public:
 	{
 		insert(Data, Root);
 	}
+	void erase(int Data)
+	{
+		erase(Data, Root);
+	}
 	void clear()
 	{
 		clear(Root);
@@ -74,7 +76,7 @@ public:
 	}
 	int Count()const
 	{
-		return Cout(Root);
+		return Count(Root);
 	}
 	int Sum()const
 	{
@@ -82,7 +84,7 @@ public:
 	}
 	double Avg()const
 	{
-		return(double)Sum(Root) / Cout(Root);
+		return(double)Sum(Root) / Count(Root);
 	}
 	int Depth()const
 	{
@@ -109,28 +111,34 @@ private:
 			else insert(Data, Root->pRight);
 		}
 	}
-	void erese(int Data, Element* Root)
+	void erase(int Data, Element*& Root)
 	{
 		if (Root == nullptr)return;
-		erese(Data, Root->pLeft);
-		erese(Data, Root->pRight);
+		erase(Data, Root->pLeft);
+		erase(Data, Root->pRight);
 		if (Data == Root->Data)
 		{
-			if (Root->isLeft())
+			if (Root->isLeaf())
 			{
 				delete Root;
 				Root = nullptr;
 			}
 			else
 			{
-				if (Count(Root->pLeft) > Count(Root.pRight))
+				if (Count(Root->pLeft) > Count(Root->pRight))
 				{
 					Root->Data = maxValue(Root->pLeft);
-					erese(maxValue(Root->pLeft),Root->pLeft)
+					erase(maxValue(Root->pLeft), Root->pLeft);
+				}
+				else
+				{
+					Root->Data = minValue(Root->pRight);
+					erase(minValue(Root->pRight), Root->pRight);
 				}
 			}
 		}
 	}
+
 	void clear(Element* Root)
 	{
 		if (Root == nullptr)return;
@@ -152,11 +160,11 @@ private:
 		if (Root == nullptr)return 0;
 		return Root->pRight ? minValue(Root->pRight) : Root->Data;
 	}
-	int Cout(Element* Root)const
+	int Count(Element* Root)const
 	{
 		/*if (Root == nullptr)return 0;
 		return count(Root->pRight) + count(Root->pLeft) + 1;*/
-		return !Root ? 0 : Cout(Root->pLeft) + Cout(Root->pRight) + 1;
+		return !Root ? 0 : Count(Root->pLeft) + Count(Root->pRight) + 1;
 	}
 	int Sum(Element* Root)const
 	{
@@ -209,7 +217,7 @@ public:
 	}
 };
 
-#define BASE_CHECK
+//#define BASE_CHECK
 
 void main()
 {
@@ -246,7 +254,17 @@ void main()
 	cout << "Глубина дерева: " << unique_tree.Depth() << endl;
 #endif // BASE_CHECK
 
-	Tree my_tree = { 50, 25, 75, 16, 32, 58, 85, 48, 49 };
+	Tree my_tree = { 50, 25, 75, 16, 32, 58, 85, 48, 49, 64, 91 };
 	my_tree.print();
+	cout << "Минимальное значение в дереве: " << my_tree.minValue() << endl;
+	cout << "Максимальное значение в дереве: " << my_tree.maxValue() << endl;
+	cout << "Количество элементов в дереве: " << my_tree.Count() << endl;
+	cout << "Сумма элементов в дереве: " << my_tree.Sum() << endl;
+	cout << "Среднее-арифметическое элементов в дереве: " << my_tree.Avg() << endl;
 	cout << "Глубина дерева: " << my_tree.Depth() << endl;
+
+	int value;
+	cout << "Введите удаляемое значение: "; cin >> value;
+	my_tree.erase(value);
+	my_tree.print();
 }
